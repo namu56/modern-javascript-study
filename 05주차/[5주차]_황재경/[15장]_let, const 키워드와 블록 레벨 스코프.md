@@ -42,14 +42,14 @@
             subgraph A[ ]
                 A1[선언 단계]
             end
-
+            
             subgraph B[런타임ㅤㅤㅤㅤㅤㅤㅤ]
                 B1[초기화 단계]
                 B2[할당 단계]
             end
-
-            A1 -->|⚠️Temporal Dead Zone, TDZ| B1 --> B2
-
+            
+            A1 -->|Temporal Dead Zone, TDZ| B1 --> B2
+            
             style A fill:#98FB98
             style B fill:#87CEEB
         ```
