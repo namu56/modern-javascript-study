@@ -57,10 +57,9 @@
             > *스코프의 시작 지점 ~ 초기화 시작 지점*까지 변수를 참조할 수 없는 구간 → 이 구간에서 변수 참조 시 `ReferenceError` 발생
 - `var` vs `let` vs `const`
     |keyword|var|let|const|
-    |--|--|--|--|
-    |global scope|⭕|✖️|✖️|
-    |function scope|⭕|✖️|✖️|
-    |block scope|✖️|⭕|⭕|
+    |--|:--:|:--:|:--:|
+    |전역 객체 프로퍼티|⭕|✖️|✖️|
+    |scope level|function|block|block|
     |중복 선언|⭕|✖️|✖️|
     |재할당|⭕|⭕|✖️|
     
