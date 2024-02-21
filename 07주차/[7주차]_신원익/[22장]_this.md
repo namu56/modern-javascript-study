@@ -85,7 +85,7 @@ _this_ 바인딩은 함수 호출 방식에 따라 동적으로 결정된다.
         value: 100,
         foo() {
             console.log("foo's this: ", this); // {value: 100, foo: f}
-            // 콜백 함수 내부으 ㅣthis에는 전역 객체가 바인딩된다
+            // 콜백 함수 내부의 this에는 전역 객체가 바인딩된다
             setTimeout(function () {
                 console.log("callback's this: ", this); // window
                 console.log("callback's this.value: ", this.value); // 1
@@ -115,7 +115,7 @@ _this_ 바인딩은 함수 호출 방식에 따라 동적으로 결정된다.
     obj.foo();
     ```
 
--   Function prototye은 *this*를 명시적으로 바인딩할 수 있는 메서드를 사용할 수 있다(apply, call, bind)
+-   Function prototype은 *this*를 명시적으로 바인딩할 수 있는 메서드를 사용할 수 있다(apply, call, bind)
 -   화살표 함수를 사용해서 *this*을 일치시킬 수 있다
 
     ```js
