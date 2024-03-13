@@ -190,7 +190,7 @@ console.log(set); // Set(0) {size: 0}
 - **`Set` 객체는 이터러블이다.**
 
   - `for...of` 문으로 순회 가능
-  - 스프레드 문법과 배열 디스크럭처링의 대상이 될 수 있다.
+  - 스프레드 문법과 배열 디스트럭처링의 대상이 될 수 있다.
 
   ```jsx
   const set = new Set([1, 2, 3]);
@@ -214,47 +214,87 @@ console.log(set); // Set(0) {size: 0}
 
 ### (8) 집합 연산
 
-- **교집합(A ∩ B)** ⇒ 집합 A와 집합 B의 공통 요소로 구성
-- **합집합(A ∪ B)** ⇒ 집합 A와 집합 B의 중복 없는 모든 요소로 구성
-- **차집합(A - B)** ⇒ 집합 A에는 존재하지만 집합 B에는 존재하지 않는 요소로 구성
+- `Set` 객체는 집합 연산을 할 수 있는 다양한 프로토타입 메서드를 제공한다.
+
+- **교집합(`A ∩ B`)** ⇒ 집합 A와 집합 B의 공통 요소로 구성
+
+  - `Set.prototype.intersection` 메서드를 사용하여 교집합을 구할 수 있다.
+
+  ```jsx
+  Set.prototype.intersection = function (set) {
+    return new Set([...this].filter((v) => set.has(v)));
+  };
+
+  const setA = new Set([1, 2, 3, 4]);
+  const setB = new Set([2, 4]);
+
+  // setA와 setB의 교집합
+  console.log(setA.intersection(setB)); // Set(2) {2, 4}
+  // setB와 setA의 교집합
+  console.log(setB.intersection(setA)); // Set(2) {2, 4}
+  ```
+
+- **합집합(`A ∪ B`)** ⇒ 집합 A와 집합 B의 중복 없는 모든 요소로 구성
+
+  - `Set.prototype.union` 메서드를 사용하여 합집합을 구할 수 있다.
+
+  ```jsx
+  Set.prototype.union = function (set) {
+    return new Set([...this, ...set]);
+  };
+
+  const setA = new Set([1, 2, 3, 4]);
+  const setB = new Set([2, 4]);
+
+  // setA와 setB의 합집합
+  console.log(setA.union(setB)); // Set(4) {1, 2, 3, 4}
+  // setB와 setA의 합집합
+  console.log(setB.union(setA)); // Set(4) {2, 4, 1, 3}
+  ```
+
+- **차집합(`A - B`)** ⇒ 집합 A에는 존재하지만 집합 B에는 존재하지 않는 요소로 구성
+
+  - `Set.prototype.difference` 메서드를 사용하여 차집합을 구할 수 있다.
+
+  ```jsx
+  Set.prototype.difference = function (set) {
+    return new Set([...this].filter((v) => !set.has(v)));
+  };
+
+  const setA = new Set([1, 2, 3, 4]);
+  const setB = new Set([2, 4]);
+
+  // setA에 대한 setB의 차집합
+  console.log(setA.difference(setB)); // Set(2) {1, 3}
+  // setB에 대한 setA의 차집합
+  console.log(setB.difference(setA)); // Set(0) {}
+  ```
+
 - **부분 집합과 상위 집합**
-  - 집합 A가 집합 B에 포함되는 경우 **(A ⊆ B)**
+
+  - `Set.prototype.isSupersetOf` 메서드 또는 `Set.prototype.isSubsetOf` 메서드 사용
+  - 집합 A가 집합 B에 포함되는 경우 **(`A ⊆ B`)**
     - 집합 A는 집합 B의 **부분 집합(subset)**
     - 집합 B는 집합 A의 **상위 집합(superset)**
 
-```jsx
-// cf. 책과는 달리, 개인적으로 작성한 코드
+  ```jsx
+  // this가 subset의 상위 집합인지 확인
+  Set.prototype.isSupersetOf = function (subset) {
+    const supersetArr = [...this];
+    return [...subset].every((v) => supersetArr.includes(v));
+  };
 
-// array를 set으로 변환 ⇒ 중복 요소는 제거됨
-const setA = new Set([1, 2, 3, 4, 5, 6, 7, 8, 8]);
-const setB = new Set([3, 4, 5, 6, 7]);
+  const setA = new Set([1, 2, 3, 4]);
+  const setB = new Set([2, 4]);
 
-// 합집합 ⇒ Set과 스프레드 문법 사용
-const union = new Set([...setA, ...setB]);
+  // setA가 setB의 상위 집합인지 확인
+  console.log(setA.isSupersetOf(setB)); // true
+  // setB가 setA의 상위 집합인지 확인
+  console.log(setB.isSupersetOf(setA)); // false
 
-// 교집합 ⇒ Set과 스프레드 문법, 배열의 filter 메서드와 Set의 has 메서드 사용
-const intersection = new Set([...setA].filter((x) => setB.has(x)));
-
-// 차집합 : set1 - set2
-const difference1 = new Set([...setA].filter((x) => !setB.has(x)));
-
-// 차집합 : set2 - set1
-const difference2 = new Set([...setB].filter((x) => !setA.has(x)));
-
-// 베타적 논리합 : union - intersection
-const symmetricDifference = new Set([...difference1, ...difference2]);
-
-// ex) 좌측 집합(superset)이 우측 집합(subset)의 상위 집합인지 판단
-const isSuperSet = (superset, subset) => {
-  for (let element of subset) {
-    // superset에 subset의 요소 중 하나라도 포함하고 있지 않다면 false
-    if (!superset.has(element)) return false;
-  }
-  return true;
-};
-
-isSuperSet(new Set([1, 2, 3]), new Set([1, 2])); // true ⇒ A ⊇ B
-```
+  // setB가 setA의 부분 집합인지 확인
+  console.log(setB.isSubsetOf(setA)); // true
+  ```
 
 <br/><br/>
 
